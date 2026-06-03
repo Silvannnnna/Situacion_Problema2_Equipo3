@@ -1,4 +1,4 @@
-# Optimización de Servicios de Internet (Situación Problema 2)
+# Optimización de Servicios de Internet (Situación Problema 2) hola
 
 Este proyecto en C++ resuelve cuatro problemas fundamentales de infraestructura, logística y flujo de datos para una empresa que busca implementar servicios de Internet con fibra óptica en nuevas colonias. Se aplican conceptos avanzados de Teoría de Grafos y Geometría Computacional.
 
