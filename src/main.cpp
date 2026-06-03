@@ -1,34 +1,31 @@
-#include "student_service.h"
+#include "GraphParser.h"
+#include "NetworkBuilder.h"
+#include "RoutingAndFlow.h"
+#include "GeoDistricts.h"
 
-#include <httplib.h>
-#include <cstdlib>
 #include <iostream>
-#include <string>
 
 int main() {
-    httplib::Server server;
+    GraphParser parser;
+    parser.parse("data/input.txt");
 
-    server.Get("/health", [](const httplib::Request&, httplib::Response& res) {
-        res.set_content(StudentService::health(), "application/json");
-        res.status = 200;
-    });
+    NetworkBuilder network;
+    auto mst = network.buildMST(parser.N, parser.dist);
+    std::cout << "1. Forma de cablear las colonias:\n";
+    std::cout << network.formatResult(mst) << "\n";
 
-    server.Post("/api/v1/grades/final", [](const httplib::Request& req, httplib::Response& res) {
-        try {
-            const auto result = StudentService::calculateFinalGradeJson(req.body);
-            res.set_content(result, "application/json");
-            res.status = 200;
-        } catch (const std::exception& ex) {
-            const std::string body = std::string("{\"error\":\"") + ex.what() + "\"}";
-            res.set_content(body, "application/json");
-            res.status = 400;
-        }
-    });
+    RoutingAndFlow routing;
+    auto tour = routing.solveTSP(parser.N, parser.dist);
+    std::cout << "2. Ruta de correspondencia:\n";
+    std::cout << routing.formatTSP(tour) << "\n";
 
-    const char* portEnv = std::getenv("PORT");
-    const int port = portEnv ? std::stoi(portEnv) : 8080;
+    int flow = routing.maxFlow(parser.N, parser.capacity, 0, parser.N - 1);
+    std::cout << "3. Flujo maximo:\n";
+    std::cout << routing.formatFlow(flow) << "\n";
 
-    std::cout << "Server running on http://0.0.0.0:" << port << std::endl;
-    server.listen("0.0.0.0", port);
+    GeoDistricts geo;
+    std::cout << "4. Central mas cercana:\n";
+    std::cout << geo.formatResult(parser.coords, parser.coords) << "\n";
+
     return 0;
 }
