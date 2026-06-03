@@ -1,4 +1,4 @@
-#include "NetworkBuilder.h"
+#include "../include/NetworkBuilder.h"
 
 #include <sstream>
 

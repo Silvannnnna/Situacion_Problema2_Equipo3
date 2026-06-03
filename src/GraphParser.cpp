@@ -1,4 +1,4 @@
-#include "GraphParser.h"
+#include "../include/GraphParser.h"
 
 #include <fstream>
 #include <stdexcept>

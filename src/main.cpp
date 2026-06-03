@@ -1,7 +1,7 @@
-#include "GraphParser.h"
-#include "NetworkBuilder.h"
-#include "RoutingAndFlow.h"
-#include "GeoDistricts.h"
+#include "../include/GraphParser.h"
+#include "../include/NetworkBuilder.h"
+#include "../include/RoutingAndFlow.h"
+#include "../include/GeoDistricts.h"
 
 #include <iostream>
 
