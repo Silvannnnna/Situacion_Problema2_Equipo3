@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef NETWORKBUILDER_H
+#define NETWORKBUILDER_H
 #include <vector>
 #include <string>
 
@@ -16,3 +16,5 @@ public:
     // Formats the MST result as the required output string.
     std::string formatResult(const std::vector<Edge>& mst);
 };
+
+#endif
