@@ -48,7 +48,7 @@ std::vector<int> RoutingAndFlow::solveTSP( //BACKTRACKING TSP SOLUTION: Pending 
     backtrack(0, 0);
     return bestTour;
 }
-
+//Implemeentation of maxFlow using Ford-Fulkerson (Edmonds-Karp) algorithm
 int RoutingAndFlow::maxFlow(
     int N, const std::vector<std::vector<int>>& capacity,
     int source, int sink)
