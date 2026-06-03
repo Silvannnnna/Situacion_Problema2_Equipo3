@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef GRAPHPARSER_H
+#define GRAPHPARSER_H
 #include <string>
 #include <vector>
 
@@ -14,3 +14,5 @@ public:
     // Reads all data from the given file path.
     void parse(const std::string& filePath);
 };
+
+#endif

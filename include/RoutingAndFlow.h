@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ROUTINGANDFLOW_H
+#define ROUTINGANDFLOW_H
 
 #include <vector>
 #include <string>
@@ -19,3 +20,5 @@ public:
     // Formats max-flow result as the required output string.
     std::string formatFlow(int flow);
 };
+
+#endif

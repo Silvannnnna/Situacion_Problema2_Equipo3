@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef GEODISTRICTS_H
+#define GEODISTRICTS_H
 #include <vector>
 #include <string>
 
@@ -19,3 +19,5 @@ public:
     std::string formatResult(const std::vector<std::pair<int,int>>& coords,
                              const std::vector<std::pair<int,int>>& centrals);
 };
+
+#endif
