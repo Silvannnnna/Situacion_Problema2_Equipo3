@@ -3,18 +3,15 @@
 #include <vector>
 #include <string>
 
-// Builds the Minimum Spanning Tree (MST) using Prim or Kruskal.
+// Construye el Árbol de Expansión Mínima (MST) de la red de colonias usando el algoritmo de Kruskal con Union-Find y compresion de caminos
 class NetworkBuilder {
 public:
-    struct Edge {
+    struct Edge { // representa una arista entre dos nodos con un peso (distancia)
         int u, v, weight;
     };
 
-    // Returns the MST edges given an N×N distance matrix.
-    std::vector<Edge> buildMST(int N, const std::vector<std::vector<int>>& dist);
-
-    // Formats the MST result as the required output string.
-    std::string formatResult(const std::vector<Edge>& mst);
+    std::vector<Edge> buildMST(int N, const std::vector<std::vector<int>>& dist); // construye el MST usando Kruskal
+    std::string formatResult(const std::vector<Edge>& mst); // formatea el resultado del MST en una cadena de texto
 };
 
 #endif
