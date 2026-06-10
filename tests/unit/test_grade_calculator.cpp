@@ -109,7 +109,7 @@ TEST(RoutingAndFlowTest, TSPReturnsFullTour) {
         {20, 25, 30,  0}
     };
     RoutingAndFlow rf;
-    auto tour = rf.solveTSP(4, dist);
+    auto tour = rf.SolveTSP(4, dist);
     EXPECT_EQ(static_cast<int>(tour.size()), 4);
 }
 
@@ -279,14 +279,14 @@ TEST(NetworkBuilderTest, MSTFiveNodes) {
 TEST(RoutingAndFlowTest, TSPSingleNode) {
     std::vector<std::vector<int>> dist = {{0}};
     RoutingAndFlow rf;
-    auto tour = rf.solveTSP(1, dist);
+    auto tour = rf.SolveTSP(1, dist);
     EXPECT_EQ(static_cast<int>(tour.size()), 1);
 }
 
 TEST(RoutingAndFlowTest, TSPTwoNodes) {
     std::vector<std::vector<int>> dist = {{0, 5}, {5, 0}};
     RoutingAndFlow rf;
-    auto tour = rf.solveTSP(2, dist);
+    auto tour = rf.SolveTSP(2, dist);
     EXPECT_EQ(static_cast<int>(tour.size()), 2);
 }
 
@@ -297,7 +297,7 @@ TEST(RoutingAndFlowTest, TSPStartsAtZero) {
         {15, 35, 0}
     };
     RoutingAndFlow rf;
-    auto tour = rf.solveTSP(3, dist);
+    auto tour = rf.SolveTSP(3, dist);
     EXPECT_EQ(tour[0], 0);
 }
 

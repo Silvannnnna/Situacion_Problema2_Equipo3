@@ -10,7 +10,7 @@
 
 using json = nlohmann::json;
 
-static std::string buildSolveResponse() {
+static std::string build_solve_response() {
     GraphParser parser;
     parser.parse("data/input.txt");
 
@@ -18,7 +18,7 @@ static std::string buildSolveResponse() {
     auto mst = network.buildMST(parser.N, parser.dist);
 
     RoutingAndFlow routing;
-    auto tour = routing.solveTSP(parser.N, parser.dist);
+    auto tour = routing.SolveTSP(parser.N, parser.dist);
     int flow = routing.maxFlow(parser.N, parser.capacity, 0, parser.N - 1);
 
     GeoDistricts geo;
@@ -42,7 +42,7 @@ int main() {
 
     svr.Get("/solve", [](const httplib::Request&, httplib::Response& res) {
         try {
-            res.set_content(buildSolveResponse(), "application/json");
+            res.set_content(build_solve_response(), "application/json");
         } catch (const std::exception& e) {
             res.status = 500;
             json err;

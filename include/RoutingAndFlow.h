@@ -8,7 +8,7 @@
 class RoutingAndFlow {
 public:
     // Returns the shortest Hamiltonian cycle order starting from node 0.
-    std::vector<int> solveTSP(int N, const std::vector<std::vector<int>>& dist);
+    std::vector<int> SolveTSP(int N, const std::vector<std::vector<int>>& dist);
 
     // Returns the maximum flow from source to sink.
     int maxFlow(int N, const std::vector<std::vector<int>>& capacity,

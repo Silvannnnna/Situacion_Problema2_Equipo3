@@ -35,9 +35,11 @@ std::vector<NetworkBuilder::Edge> NetworkBuilder::buildMST(
     for (const auto& e : edges) {
         int pu = find(e.u), pv = find(e.v);
         if (pu != pv) {
-            parent[pu] = pv; // une los componentes
+            parent[pu] = pv;
             mst.push_back(e);
-            if (static_cast<int>(mst.size()) == N - 1) break;
+            if (static_cast<int>(mst.size()) == N - 1) {
+                break;
+            }
         }
     }
     return mst; // regresa el MST construido

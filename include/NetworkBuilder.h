@@ -10,8 +10,11 @@ public:
         int u, v, weight;
     };
 
-    std::vector<Edge> buildMST(int N, const std::vector<std::vector<int>>& dist); // construye el MST usando Kruskal
-    std::string formatResult(const std::vector<Edge>& mst); // formatea el resultado del MST en una cadena de texto
+    /** Construye el MST usando el algoritmo de Kruskal. */
+    std::vector<Edge> buildMST(int N, const std::vector<std::vector<int>>& dist);
+
+    /** Formatea el resultado del MST como cadena de texto. */
+    std::string formatResult(const std::vector<Edge>& mst);
 };
 
 #endif
