@@ -1,7 +1,7 @@
+// RoutingAndFlow.cpp — TSP backtracking y Max Flow Ford-Fulkerson (Edmonds-Karp)
 #include "../include/RoutingAndFlow.h"
 
 #include <sstream>
-#include <functional>
 #include <queue>
 #include <algorithm>
 #include <climits>
@@ -54,6 +54,17 @@ std::vector<int> RoutingAndFlow::SolveTSP(
     return state.bestTour;
 }
 
+static std::vector<int> reconstruct_path(int sink, const std::vector<int>& parent) {
+    std::vector<int> path;
+    int curr = sink;
+    while (curr != -1) {
+        path.push_back(curr);
+        curr = parent[curr];
+    }
+    std::reverse(path.begin(), path.end());
+    return path;
+}
+
 static std::vector<int> find_augmenting_path(
     int N, int source, int sink,
     const std::vector<std::vector<int>>& residual)
@@ -76,14 +87,7 @@ static std::vector<int> find_augmenting_path(
                 q.push(v);
 
                 if (v == sink) {
-                    std::vector<int> path;
-                    int curr = sink;
-                    while (curr != -1) {
-                        path.push_back(curr);
-                        curr = parent[curr];
-                    }
-                    std::reverse(path.begin(), path.end());
-                    return path;
+                    return reconstruct_path(sink, parent);
                 }
             }
         }
@@ -91,7 +95,7 @@ static std::vector<int> find_augmenting_path(
     return {};
 }
 
-int RoutingAndFlow::maxFlow(
+int RoutingAndFlow::MaxFlow(
     int N, const std::vector<std::vector<int>>& capacity,
     int source, int sink)
 {
@@ -116,7 +120,7 @@ int RoutingAndFlow::maxFlow(
     return maxFlowValue;
 }
 
-std::string RoutingAndFlow::formatTSP(const std::vector<int>& tour) {
+std::string RoutingAndFlow::FormatTSP(const std::vector<int>& tour) {
     std::ostringstream oss;
     for (int node : tour) {
         oss << static_cast<char>('A' + node) << " -> ";
@@ -128,6 +132,6 @@ std::string RoutingAndFlow::formatTSP(const std::vector<int>& tour) {
     return oss.str();
 }
 
-std::string RoutingAndFlow::formatFlow(int flow) {
+std::string RoutingAndFlow::FormatFlow(int flow) {
     return std::to_string(flow) + "\n";
 }

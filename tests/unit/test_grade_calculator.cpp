@@ -121,7 +121,7 @@ TEST(RoutingAndFlowTest, MaxFlowPositive) {
         {0,  0,  0}
     };
     RoutingAndFlow rf;
-    int flow = rf.maxFlow(3, cap, 0, 2);
+    int flow = rf.MaxFlow(3, cap, 0, 2);
     EXPECT_EQ(flow, 5);
 }
 
@@ -131,19 +131,19 @@ TEST(RoutingAndFlowTest, MaxFlowZeroWhenNoPath) {
         {0, 0}
     };
     RoutingAndFlow rf;
-    int flow = rf.maxFlow(2, cap, 0, 1);
+    int flow = rf.MaxFlow(2, cap, 0, 1);
     EXPECT_EQ(flow, 0);
 }
 
 TEST(RoutingAndFlowTest, FormatTSPNotEmpty) {
     RoutingAndFlow rf;
-    auto result = rf.formatTSP({0, 1, 2});
+    auto result = rf.FormatTSP({0, 1, 2});
     EXPECT_FALSE(result.empty());
 }
 
 TEST(RoutingAndFlowTest, FormatFlowContainsNumber) {
     RoutingAndFlow rf;
-    auto result = rf.formatFlow(42);
+    auto result = rf.FormatFlow(42);
     EXPECT_NE(result.find("42"), std::string::npos);
 }
 
@@ -310,7 +310,7 @@ TEST(RoutingAndFlowTest, MaxFlowMultiplePaths) {
         {0,  0,  0,  0}
     };
     RoutingAndFlow rf;
-    EXPECT_EQ(rf.maxFlow(4, cap, 0, 3), 20);
+    EXPECT_EQ(rf.MaxFlow(4, cap, 0, 3), 20);
 }
 
 TEST(RoutingAndFlowTest, MaxFlowBottleneck) {
@@ -321,7 +321,7 @@ TEST(RoutingAndFlowTest, MaxFlowBottleneck) {
         {0,   0,   0}
     };
     RoutingAndFlow rf;
-    EXPECT_EQ(rf.maxFlow(3, cap, 0, 2), 1);
+    EXPECT_EQ(rf.MaxFlow(3, cap, 0, 2), 1);
 }
 
 TEST(RoutingAndFlowTest, MaxFlowSourceEqualsNMinusOne) {
@@ -333,25 +333,25 @@ TEST(RoutingAndFlowTest, MaxFlowSourceEqualsNMinusOne) {
         {0,  0,  0,  0}
     };
     RoutingAndFlow rf;
-    int flow = rf.maxFlow(4, cap, 0, 3);
+    int flow = rf.MaxFlow(4, cap, 0, 3);
     EXPECT_GT(flow, 0);
 }
 
 TEST(RoutingAndFlowTest, FormatTSPEmptyTour) {
     RoutingAndFlow rf;
-    auto result = rf.formatTSP({});
+    auto result = rf.FormatTSP({});
     EXPECT_FALSE(result.empty());
 }
 
 TEST(RoutingAndFlowTest, FormatTSPContainsArrow) {
     RoutingAndFlow rf;
-    auto result = rf.formatTSP({0, 1, 2});
+    auto result = rf.FormatTSP({0, 1, 2});
     EXPECT_NE(result.find("->"), std::string::npos);
 }
 
 TEST(RoutingAndFlowTest, FormatFlowZero) {
     RoutingAndFlow rf;
-    auto result = rf.formatFlow(0);
+    auto result = rf.FormatFlow(0);
     EXPECT_NE(result.find("0"), std::string::npos);
 }
 

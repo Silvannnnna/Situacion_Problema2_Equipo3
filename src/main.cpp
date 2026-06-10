@@ -5,10 +5,19 @@
 
 #include <httplib.h>
 #include <nlohmann/json.hpp>
+#include <csignal>
 #include <iostream>
 #include <string>
 
 using json = nlohmann::json;
+
+static httplib::Server* g_svr = nullptr;
+
+static void signal_handler(int) {
+    if (g_svr != nullptr) {
+        g_svr->stop();
+    }
+}
 
 static std::string build_solve_response() {
     GraphParser parser;
@@ -19,13 +28,13 @@ static std::string build_solve_response() {
 
     RoutingAndFlow routing;
     auto tour = routing.SolveTSP(parser.N, parser.dist);
-    int flow = routing.maxFlow(parser.N, parser.capacity, 0, parser.N - 1);
+    int flow = routing.MaxFlow(parser.N, parser.capacity, 0, parser.N - 1);
 
     GeoDistricts geo;
 
     json result;
     result["cabling"] = network.formatResult(mst);
-    result["route"] = routing.formatTSP(tour);
+    result["route"] = routing.FormatTSP(tour);
     result["maxFlow"] = flow;
     result["nearestCentral"] = geo.formatResult(parser.coords, parser.coords);
     return result.dump();
@@ -33,6 +42,10 @@ static std::string build_solve_response() {
 
 int main() {
     httplib::Server svr;
+    g_svr = &svr;
+
+    std::signal(SIGTERM, signal_handler);
+    std::signal(SIGINT,  signal_handler);
 
     svr.Get("/health", [](const httplib::Request&, httplib::Response& res) {
         json body;
