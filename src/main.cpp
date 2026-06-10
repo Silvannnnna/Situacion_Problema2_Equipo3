@@ -3,29 +3,55 @@
 #include "../include/RoutingAndFlow.h"
 #include "../include/GeoDistricts.h"
 
+#include <httplib.h>
+#include <nlohmann/json.hpp>
 #include <iostream>
+#include <string>
 
-int main() {
+using json = nlohmann::json;
+
+static std::string buildSolveResponse() {
     GraphParser parser;
     parser.parse("data/input.txt");
 
     NetworkBuilder network;
     auto mst = network.buildMST(parser.N, parser.dist);
-    std::cout << "1. Forma de cablear las colonias:\n";
-    std::cout << network.formatResult(mst) << "\n";
 
     RoutingAndFlow routing;
     auto tour = routing.solveTSP(parser.N, parser.dist);
-    std::cout << "2. Ruta de correspondencia:\n";
-    std::cout << routing.formatTSP(tour) << "\n";
-
     int flow = routing.maxFlow(parser.N, parser.capacity, 0, parser.N - 1);
-    std::cout << "3. Flujo maximo:\n";
-    std::cout << routing.formatFlow(flow) << "\n";
 
     GeoDistricts geo;
-    std::cout << "4. Central mas cercana:\n";
-    std::cout << geo.formatResult(parser.coords, parser.coords) << "\n";
 
+    json result;
+    result["cabling"] = network.formatResult(mst);
+    result["route"] = routing.formatTSP(tour);
+    result["maxFlow"] = flow;
+    result["nearestCentral"] = geo.formatResult(parser.coords, parser.coords);
+    return result.dump();
+}
+
+int main() {
+    httplib::Server svr;
+
+    svr.Get("/health", [](const httplib::Request&, httplib::Response& res) {
+        json body;
+        body["status"] = "UP";
+        res.set_content(body.dump(), "application/json");
+    });
+
+    svr.Get("/solve", [](const httplib::Request&, httplib::Response& res) {
+        try {
+            res.set_content(buildSolveResponse(), "application/json");
+        } catch (const std::exception& e) {
+            res.status = 500;
+            json err;
+            err["error"] = e.what();
+            res.set_content(err.dump(), "application/json");
+        }
+    });
+
+    std::cout << "Server running on port 8080\n";
+    svr.listen("0.0.0.0", 8080);
     return 0;
 }

@@ -33,8 +33,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(httplib json googletest)
 
 add_library(student_core
-    src/grade_calculator.cpp
-    src/student_service.cpp
+    src/GraphParser.cpp
+    src/NetworkBuilder.cpp
+    src/RoutingAndFlow.cpp
+    src/GeoDistricts.cpp
 )
 
 target_include_directories(student_core PUBLIC include)
