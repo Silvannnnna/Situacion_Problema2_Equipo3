@@ -267,8 +267,8 @@ jobs:
           SONAR_ROOT_CERT: ${{ env.SONAR_ROOT_CERT }}
         with:
           args: >
-            -Dsonar.projectKey=student-grade-service
-            -Dsonar.projectName=student-grade-service
+            -Dsonar.projectKey=Situacion_Problema2_Equipo3
+            -Dsonar.projectName=Situacion_Problema2_Equipo3
             -Dsonar.sources=src,include
             -Dsonar.tests=tests
             -Dsonar.cfamily.compile-commands=build/compile_commands.json
