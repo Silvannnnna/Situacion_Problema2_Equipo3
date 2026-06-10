@@ -170,3 +170,213 @@ TEST(GeoDistrictsTest, FormatResultNotEmpty) {
     auto result = geo.formatResult(pts, pts);
     EXPECT_FALSE(result.empty());
 }
+
+TEST(GeoDistrictsTest, NearestNeighborEmptyCentralsReturnsMinusOne) {
+    std::vector<std::pair<int,int>> empty;
+    GeoDistricts geo;
+    EXPECT_EQ(geo.nearestNeighbor(empty, {0, 0}), -1);
+}
+
+TEST(GeoDistrictsTest, NearestNeighborWithExcludeIndex) {
+    // (0,0) is closest to query (1,1), but exclude it → should return index 1
+    std::vector<std::pair<int,int>> centrals = {{0,0}, {5,5}};
+    GeoDistricts geo;
+    EXPECT_EQ(geo.nearestNeighbor(centrals, {1, 1}, 0), 1);
+}
+
+TEST(GeoDistrictsTest, NearestNeighborSingleCentral) {
+    std::vector<std::pair<int,int>> centrals = {{3,4}};
+    GeoDistricts geo;
+    EXPECT_EQ(geo.nearestNeighbor(centrals, {0, 0}), 0);
+}
+
+TEST(GeoDistrictsTest, FormatResultEmptyCoordsReturnsEmpty) {
+    std::vector<std::pair<int,int>> empty;
+    GeoDistricts geo;
+    EXPECT_TRUE(geo.formatResult(empty, empty).empty());
+}
+
+TEST(GeoDistrictsTest, FormatResultEmptyCentralsReturnsEmpty) {
+    std::vector<std::pair<int,int>> pts = {{0,0}};
+    std::vector<std::pair<int,int>> empty;
+    GeoDistricts geo;
+    EXPECT_TRUE(geo.formatResult(pts, empty).empty());
+}
+
+TEST(GeoDistrictsTest, FormatResultContainsLabels) {
+    std::vector<std::pair<int,int>> pts = {{0,0}, {10,0}, {0,10}};
+    GeoDistricts geo;
+    auto result = geo.formatResult(pts, pts);
+    EXPECT_NE(result.find('A'), std::string::npos);
+    EXPECT_NE(result.find('B'), std::string::npos);
+}
+
+TEST(GeoDistrictsTest, VoronoiPolygonsEmptyInput) {
+    std::vector<std::pair<int,int>> empty;
+    GeoDistricts geo;
+    EXPECT_TRUE(geo.voronoiPolygons(empty).empty());
+}
+
+TEST(GeoDistrictsTest, VoronoiPolygonsSizeMatchesInput) {
+    std::vector<std::pair<int,int>> pts = {{0,0}, {10,0}, {5,8}};
+    GeoDistricts geo;
+    auto regions = geo.voronoiPolygons(pts);
+    EXPECT_EQ(static_cast<int>(regions.size()), 3);
+}
+
+TEST(GeoDistrictsTest, VoronoiPolygonsSinglePoint) {
+    std::vector<std::pair<int,int>> pts = {{5,5}};
+    GeoDistricts geo;
+    auto regions = geo.voronoiPolygons(pts);
+    EXPECT_EQ(static_cast<int>(regions.size()), 1);
+    EXPECT_FALSE(regions[0].empty());
+}
+
+// ── NetworkBuilder extra ──────────────────────────────────────────────────────
+
+TEST(NetworkBuilderTest, MSTEmptyGraph) {
+    NetworkBuilder nb;
+    auto mst = nb.buildMST(0, {});
+    EXPECT_TRUE(mst.empty());
+}
+
+TEST(NetworkBuilderTest, MSTSingleNode) {
+    NetworkBuilder nb;
+    std::vector<std::vector<int>> dist = {{0}};
+    auto mst = nb.buildMST(1, dist);
+    EXPECT_TRUE(mst.empty());
+}
+
+TEST(NetworkBuilderTest, MSTDisconnectedGraph) {
+    // Two nodes with zero weight (no edge) → MST empty
+    NetworkBuilder nb;
+    std::vector<std::vector<int>> dist = {{0, 0}, {0, 0}};
+    auto mst = nb.buildMST(2, dist);
+    EXPECT_TRUE(mst.empty());
+}
+
+TEST(NetworkBuilderTest, FormatResultEmptyMST) {
+    NetworkBuilder nb;
+    std::vector<NetworkBuilder::Edge> empty;
+    EXPECT_TRUE(nb.formatResult(empty).empty());
+}
+
+TEST(NetworkBuilderTest, MSTFiveNodes) {
+    std::vector<std::vector<int>> dist = {
+        { 0, 16, 45, 32,  0},
+        {16,  0, 18, 21,  0},
+        {45, 18,  0,  7,  0},
+        {32, 21,  7,  0,  0},
+        { 0,  0,  0,  0,  0}
+    };
+    NetworkBuilder nb;
+    auto mst = nb.buildMST(5, dist);
+    EXPECT_LE(static_cast<int>(mst.size()), 4);
+}
+
+// ── RoutingAndFlow extra ──────────────────────────────────────────────────────
+
+TEST(RoutingAndFlowTest, TSPSingleNode) {
+    std::vector<std::vector<int>> dist = {{0}};
+    RoutingAndFlow rf;
+    auto tour = rf.solveTSP(1, dist);
+    EXPECT_EQ(static_cast<int>(tour.size()), 1);
+}
+
+TEST(RoutingAndFlowTest, TSPTwoNodes) {
+    std::vector<std::vector<int>> dist = {{0, 5}, {5, 0}};
+    RoutingAndFlow rf;
+    auto tour = rf.solveTSP(2, dist);
+    EXPECT_EQ(static_cast<int>(tour.size()), 2);
+}
+
+TEST(RoutingAndFlowTest, TSPStartsAtZero) {
+    std::vector<std::vector<int>> dist = {
+        {0, 10, 15},
+        {10, 0, 35},
+        {15, 35, 0}
+    };
+    RoutingAndFlow rf;
+    auto tour = rf.solveTSP(3, dist);
+    EXPECT_EQ(tour[0], 0);
+}
+
+TEST(RoutingAndFlowTest, MaxFlowMultiplePaths) {
+    // 0→1 cap 10, 0→2 cap 10, 1→3 cap 10, 2→3 cap 10 → max flow = 20
+    std::vector<std::vector<int>> cap = {
+        {0, 10, 10,  0},
+        {0,  0,  0, 10},
+        {0,  0,  0, 10},
+        {0,  0,  0,  0}
+    };
+    RoutingAndFlow rf;
+    EXPECT_EQ(rf.maxFlow(4, cap, 0, 3), 20);
+}
+
+TEST(RoutingAndFlowTest, MaxFlowBottleneck) {
+    // 0→1 cap 100, 1→2 cap 1 → bottleneck = 1
+    std::vector<std::vector<int>> cap = {
+        {0, 100,   0},
+        {0,   0,   1},
+        {0,   0,   0}
+    };
+    RoutingAndFlow rf;
+    EXPECT_EQ(rf.maxFlow(3, cap, 0, 2), 1);
+}
+
+TEST(RoutingAndFlowTest, MaxFlowSourceEqualsNMinusOne) {
+    // Standard 4-node problem
+    std::vector<std::vector<int>> cap = {
+        {0, 16, 13,  0},
+        {0,  0, 10, 12},
+        {0,  4,  0, 14},
+        {0,  0,  0,  0}
+    };
+    RoutingAndFlow rf;
+    int flow = rf.maxFlow(4, cap, 0, 3);
+    EXPECT_GT(flow, 0);
+}
+
+TEST(RoutingAndFlowTest, FormatTSPEmptyTour) {
+    RoutingAndFlow rf;
+    auto result = rf.formatTSP({});
+    EXPECT_FALSE(result.empty());
+}
+
+TEST(RoutingAndFlowTest, FormatTSPContainsArrow) {
+    RoutingAndFlow rf;
+    auto result = rf.formatTSP({0, 1, 2});
+    EXPECT_NE(result.find("->"), std::string::npos);
+}
+
+TEST(RoutingAndFlowTest, FormatFlowZero) {
+    RoutingAndFlow rf;
+    auto result = rf.formatFlow(0);
+    EXPECT_NE(result.find("0"), std::string::npos);
+}
+
+// ── GraphParser extra ─────────────────────────────────────────────────────────
+
+TEST(GraphParserTest, ParsesFourByFour) {
+    auto path = writeTempInput(
+        "4\n"
+        "0 16 45 32\n16 0 18 21\n45 18 0 7\n32 21 7 0\n"
+        "0 16 45 32\n16 0 18 21\n45 18 0 7\n32 21 7 0\n"
+        "(0,0)\n(1,1)\n(2,2)\n(3,3)\n"
+    );
+    GraphParser p;
+    p.parse(path);
+    EXPECT_EQ(p.N, 4);
+    EXPECT_EQ(p.dist[0][1], 16);
+    EXPECT_EQ(p.capacity[2][3], 7);
+    EXPECT_EQ(p.coords[3].first, 3);
+    EXPECT_EQ(p.coords[3].second, 3);
+}
+
+TEST(GraphParserTest, ParsesNegativeCoords) {
+    auto path = writeTempInput("1\n0\n0\n(-5,-10)\n");
+    GraphParser p;
+    p.parse(path);
+    EXPECT_EQ(p.coords[0].first, -5);
+    EXPECT_EQ(p.coords[0].second, -10);
+}
