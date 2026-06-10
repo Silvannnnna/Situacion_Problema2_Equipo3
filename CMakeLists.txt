@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(student_grade_service VERSION 1.0.0 LANGUAGES CXX)
+project(situacion_problema2 VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -42,8 +42,8 @@ add_library(student_core
 target_include_directories(student_core PUBLIC include)
 target_link_libraries(student_core PUBLIC httplib::httplib nlohmann_json::nlohmann_json)
 
-add_executable(student_grade_service src/main.cpp)
-target_link_libraries(student_grade_service PRIVATE student_core)
+add_executable(situacion_problema2 src/main.cpp)
+target_link_libraries(situacion_problema2 PRIVATE student_core)
 
 add_executable(unit_tests tests/unit/test_grade_calculator.cpp)
 target_link_libraries(unit_tests PRIVATE student_core GTest::gtest_main)

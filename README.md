@@ -39,7 +39,7 @@ El pipeline de CI/CD incluye:
 ## Estructura del Proyecto
 
 ```text
-student-grade-service/
+situacion-problema2/
 ├── data/
 │   └── input.txt                        # N, matrices y coordenadas
 ├── include/
@@ -64,7 +64,7 @@ student-grade-service/
 │   ├── post_deploy_healthcheck.sh
 │   └── rollback.sh
 ├── deploy/
-│   └── student-grade-service.service    # Systemd unit
+│   └── situacion-problema2.service    # Systemd unit
 ├── .github/workflows/
 │   └── ci-cd.yml
 ├── CMakeLists.txt
@@ -358,16 +358,16 @@ Configurar en `Settings > Secrets and variables > Actions`:
 Copiar el archivo de systemd al servidor:
 
 ```bash
-sudo cp deploy/student-grade-service.service /etc/systemd/system/
+sudo cp deploy/situacion-problema2.service /etc/systemd/system/
 ```
 
 Habilitar e iniciar:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable student-grade-service
-sudo systemctl start student-grade-service
-sudo systemctl status student-grade-service
+sudo systemctl enable situacion-problema2
+sudo systemctl start situacion-problema2
+sudo systemctl status situacion-problema2
 ```
 
 ---
@@ -377,7 +377,7 @@ sudo systemctl status student-grade-service
 El script `scripts/deploy.sh` guarda la versión anterior en:
 
 ```
-/opt/student-grade-service-backups/<timestamp>
+/opt/situacion-problema2-backups/<timestamp>
 ```
 
 Si el health check falla tras el deploy, el workflow ejecuta `scripts/rollback.sh`, restaura el último respaldo y reinicia el servicio. El script verifica `/health` nuevamente para confirmar que el servicio quedó estable.

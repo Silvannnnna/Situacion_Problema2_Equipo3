@@ -20,7 +20,7 @@ permissions:
 
 env:
   BUILD_DIR: build
-  APP_NAME: student_grade_service
+  APP_NAME: situacion_problema2
   COVERAGE_THRESHOLD: "80"
 
 jobs:
@@ -369,11 +369,11 @@ jobs:
           set -euo pipefail
 
           PACKAGE_PATH="${1:-}"
-          APP_ROOT="/opt/student-grade-service"
+          APP_ROOT="/opt/situacion-problema2"
           CURRENT_DIR="${APP_ROOT}/current"
           SCRIPTS_DIR="${APP_ROOT}/scripts"
-          BACKUP_DIR="/opt/student-grade-service-backups"
-          STAGING_DIR="/tmp/student-grade-service-deploy"
+          BACKUP_DIR="/opt/situacion-problema2-backups"
+          STAGING_DIR="/tmp/situacion-problema2-deploy"
 
           if [ -z "$PACKAGE_PATH" ]; then
             echo "Usage: deploy.sh <package.tar.gz>"
@@ -385,7 +385,7 @@ jobs:
           tar -xzf "$PACKAGE_PATH" -C "$STAGING_DIR"
 
           mkdir -p "$BACKUP_DIR"
-          if [ -d "$CURRENT_DIR" ] && [ -f "$CURRENT_DIR/student_grade_service" ]; then
+          if [ -d "$CURRENT_DIR" ] && [ -f "$CURRENT_DIR/situacion_problema2" ]; then
             TS=$(date +%Y%m%d%H%M%S)
             rm -rf "${BACKUP_DIR}/backup-${TS}"
             mkdir -p "${BACKUP_DIR}/backup-${TS}"
@@ -397,7 +397,7 @@ jobs:
           mkdir -p "$CURRENT_DIR"
 
           cp -R "$STAGING_DIR/app/." "$CURRENT_DIR/"
-          chmod +x "$CURRENT_DIR/student_grade_service"
+          chmod +x "$CURRENT_DIR/situacion_problema2"
 
           if [ -d "$STAGING_DIR/scripts" ]; then
             mkdir -p "$SCRIPTS_DIR"
@@ -405,16 +405,16 @@ jobs:
             chmod +x "$SCRIPTS_DIR/"*.sh || true
           fi
 
-          sudo systemctl restart student-grade-service
+          sudo systemctl restart situacion-problema2
           EOF
 
           cat > dist/scripts/rollback.sh <<'EOF'
           #!/usr/bin/env bash
           set -euo pipefail
 
-          APP_ROOT="/opt/student-grade-service"
+          APP_ROOT="/opt/situacion-problema2"
           CURRENT_DIR="${APP_ROOT}/current"
-          BACKUP_LINK="/opt/student-grade-service-backups/latest"
+          BACKUP_LINK="/opt/situacion-problema2-backups/latest"
 
           if [ ! -L "$BACKUP_LINK" ] && [ ! -d "$BACKUP_LINK" ]; then
             echo "No backup found for rollback. This is expected on first deployment."
@@ -430,9 +430,9 @@ jobs:
           rm -rf "$CURRENT_DIR"
           mkdir -p "$CURRENT_DIR"
           cp -R "${TARGET_BACKUP}/." "$CURRENT_DIR/"
-          chmod +x "$CURRENT_DIR/student_grade_service"
+          chmod +x "$CURRENT_DIR/situacion_problema2"
 
-          sudo systemctl restart student-grade-service
+          sudo systemctl restart situacion-problema2
           echo "Rollback completed successfully"
           EOF
 
@@ -461,7 +461,7 @@ jobs:
 
           chmod +x dist/scripts/*.sh
 
-          cat > dist/systemd/student-grade-service.service <<'EOF'
+          cat > dist/systemd/situacion-problema2.service <<'EOF'
           [Unit]
           Description=Student Grade Service
           After=network.target
@@ -469,8 +469,8 @@ jobs:
           [Service]
           Type=simple
           User=ubuntu
-          WorkingDirectory=/opt/student-grade-service/current
-          ExecStart=/opt/student-grade-service/current/student_grade_service
+          WorkingDirectory=/opt/situacion-problema2/current
+          ExecStart=/opt/situacion-problema2/current/situacion_problema2
           Restart=always
           RestartSec=5
           Environment=PORT=8080
@@ -485,13 +485,13 @@ jobs:
 
       - name: Create release archive
         run: |
-          tar -czf student-grade-service.tar.gz -C dist .
+          tar -czf situacion-problema2.tar.gz -C dist .
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-package
-          path: student-grade-service.tar.gz
+          path: situacion-problema2.tar.gz
 
   deploy:
     name: Deploy to Ubuntu Server
@@ -513,7 +513,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ubuntu
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: "student-grade-service.tar.gz"
+          source: "situacion-problema2.tar.gz"
           target: "/tmp"
 
       - name: Install and deploy application
@@ -525,26 +525,26 @@ jobs:
           script: |
             set -e
 
-            sudo mkdir -p /opt/student-grade-service
-            sudo mkdir -p /opt/student-grade-service/current
-            sudo mkdir -p /opt/student-grade-service/scripts
-            sudo mkdir -p /opt/student-grade-service-backups
+            sudo mkdir -p /opt/situacion-problema2
+            sudo mkdir -p /opt/situacion-problema2/current
+            sudo mkdir -p /opt/situacion-problema2/scripts
+            sudo mkdir -p /opt/situacion-problema2-backups
 
-            sudo rm -rf /tmp/student-grade-service-package
-            mkdir -p /tmp/student-grade-service-package
-            tar -xzf /tmp/student-grade-service.tar.gz -C /tmp/student-grade-service-package
+            sudo rm -rf /tmp/situacion-problema2-package
+            mkdir -p /tmp/situacion-problema2-package
+            tar -xzf /tmp/situacion-problema2.tar.gz -C /tmp/situacion-problema2-package
 
-            sudo cp -f /tmp/student-grade-service-package/systemd/student-grade-service.service /etc/systemd/system/student-grade-service.service
-            sudo cp -f /tmp/student-grade-service-package/scripts/* /opt/student-grade-service/scripts/
-            sudo chmod +x /opt/student-grade-service/scripts/*.sh
+            sudo cp -f /tmp/situacion-problema2-package/systemd/situacion-problema2.service /etc/systemd/system/situacion-problema2.service
+            sudo cp -f /tmp/situacion-problema2-package/scripts/* /opt/situacion-problema2/scripts/
+            sudo chmod +x /opt/situacion-problema2/scripts/*.sh
 
-            sudo chown -R ubuntu:ubuntu /opt/student-grade-service
-            sudo chown -R ubuntu:ubuntu /opt/student-grade-service-backups
+            sudo chown -R ubuntu:ubuntu /opt/situacion-problema2
+            sudo chown -R ubuntu:ubuntu /opt/situacion-problema2-backups
 
             sudo systemctl daemon-reload
-            sudo systemctl enable student-grade-service || true
+            sudo systemctl enable situacion-problema2 || true
 
-            /opt/student-grade-service/scripts/deploy.sh /tmp/student-grade-service.tar.gz
+            /opt/situacion-problema2/scripts/deploy.sh /tmp/situacion-problema2.tar.gz
 
       - name: Post-deploy health check
         uses: appleboy/ssh-action@v1.0.3
@@ -554,7 +554,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             set -e
-            /opt/student-grade-service/scripts/post_deploy_healthcheck.sh http://localhost:8080/health 10 5
+            /opt/situacion-problema2/scripts/post_deploy_healthcheck.sh http://localhost:8080/health 10 5
 
       - name: Rollback if health check fails
         if: failure()
@@ -565,7 +565,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             set -e
-            /opt/student-grade-service/scripts/rollback.sh || true
+            /opt/situacion-problema2/scripts/rollback.sh || true
 
       - name: Verify service status after rollback
         if: failure()
@@ -575,4 +575,4 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
-            sudo systemctl status student-grade-service --no-pager || true
+            sudo systemctl status situacion-problema2 --no-pager || true
