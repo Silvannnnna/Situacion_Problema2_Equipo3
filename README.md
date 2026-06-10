@@ -1,4 +1,4 @@
-# Optimización de Servicios de Internet (Situación Problema 2) hola
+# Optimización de Servicios de Internet (Situación Problema 2)
 
 Este proyecto en C++ resuelve cuatro problemas fundamentales de infraestructura, logística y flujo de datos para una empresa que busca implementar servicios de Internet con fibra óptica en nuevas colonias. Se aplican conceptos avanzados de Teoría de Grafos y Geometría Computacional.
 
@@ -385,5 +385,7 @@ El script `scripts/deploy.sh` guarda la versión anterior en:
 ```
 /opt/situacion-problema2-backups/<timestamp>
 ```
+## 10. Reflexión
+https://docs.google.com/document/d/1XhziE3q-zdcnolYKbzxeHgaVmOhnx4wFfTkkMuJjSik/edit?usp=sharing
 
 Si el health check falla tras el deploy, el workflow ejecuta `scripts/rollback.sh`, restaura el último respaldo y reinicia el servicio. El script verifica `/health` nuevamente para confirmar que el servicio quedó estable.
