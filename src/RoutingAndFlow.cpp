@@ -6,43 +6,52 @@
 #include <algorithm>
 #include <climits>
 
+struct TspState {
+    std::vector<int> bestTour;
+    std::vector<int> currentPath;
+    std::vector<bool> visited;
+    int minCost;
+};
+
+static void tsp_backtrack(
+    TspState& state, int lastNode, int cost,
+    int N, const std::vector<std::vector<int>>& dist)
+{
+    if (static_cast<int>(state.currentPath.size()) == N) {
+        int totalCost = cost + dist[lastNode][0];
+        if (totalCost < state.minCost) {
+            state.minCost = totalCost;
+            state.bestTour = state.currentPath;
+        }
+        return;
+    }
+
+    if (cost >= state.minCost) {
+        return;
+    }
+
+    for (int next = 0; next < N; ++next) {
+        if (!state.visited[next]) {
+            state.visited[next] = true;
+            state.currentPath.push_back(next);
+            tsp_backtrack(state, next, cost + dist[lastNode][next], N, dist);
+            state.currentPath.pop_back();
+            state.visited[next] = false;
+        }
+    }
+}
+
 std::vector<int> RoutingAndFlow::SolveTSP(
     int N, const std::vector<std::vector<int>>& dist)
 {
-    std::vector<int> bestTour;
-    std::vector<int> currentPath;
-    std::vector<bool> visited(N, false);
-    int minCost = INT_MAX;
+    TspState state;
+    state.visited.assign(N, false);
+    state.minCost = INT_MAX;
 
-    std::function<void(int, int)> backtrack = [&](int lastNode, int cost) {
-        if (static_cast<int>(currentPath.size()) == N) {
-            int totalCost = cost + dist[lastNode][0];
-            if (totalCost < minCost) {
-                minCost = totalCost;
-                bestTour = currentPath;
-            }
-            return;
-        }
-
-        if (cost >= minCost) {
-            return;
-        }
-
-        for (int next = 0; next < N; ++next) {
-            if (!visited[next]) {
-                visited[next] = true;
-                currentPath.push_back(next);
-                backtrack(next, cost + dist[lastNode][next]);
-                currentPath.pop_back();
-                visited[next] = false;
-            }
-        }
-    };
-
-    visited[0] = true;
-    currentPath.push_back(0);
-    backtrack(0, 0);
-    return bestTour;
+    state.visited[0] = true;
+    state.currentPath.push_back(0);
+    tsp_backtrack(state, 0, 0, N, dist);
+    return state.bestTour;
 }
 
 static std::vector<int> find_augmenting_path(

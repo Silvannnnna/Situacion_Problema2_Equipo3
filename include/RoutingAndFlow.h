@@ -8,6 +8,7 @@
 class RoutingAndFlow {
 public:
     // Returns the shortest Hamiltonian cycle order starting from node 0.
+    /** Resuelve el TSP con backtracking. Devuelve el ciclo hamiltoniano mas corto desde el nodo 0. */
     std::vector<int> SolveTSP(int N, const std::vector<std::vector<int>>& dist);
 
     // Returns the maximum flow from source to sink.

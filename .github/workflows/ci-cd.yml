@@ -104,6 +104,24 @@ jobs:
           mkdir -p $BUILD_DIR/test-results
           ctest --test-dir $BUILD_DIR -R unit --output-on-failure --output-junit $BUILD_DIR/test-results/unit-tests.xml
 
+      - name: Start service for integration tests
+        run: |
+          nohup ./$BUILD_DIR/$APP_NAME > $BUILD_DIR/app.log 2>&1 &
+          echo $! > $BUILD_DIR/app.pid
+          sleep 5
+          curl -f http://localhost:8080/health
+
+      - name: Run integration tests
+        run: |
+          ctest --test-dir $BUILD_DIR -R integration --output-on-failure --output-junit $BUILD_DIR/test-results/integration-tests.xml
+
+      - name: Stop service after integration tests
+        if: always()
+        run: |
+          if [ -f "$BUILD_DIR/app.pid" ]; then
+            kill "$(cat $BUILD_DIR/app.pid)" || true
+          fi
+
       - name: Generate coverage
         run: |
           mkdir -p $BUILD_DIR/coverage
@@ -153,24 +171,6 @@ jobs:
               printf("Coverage %.2f%% meets threshold %.2f%%\n", cov, threshold);
             }
           }'
-
-      - name: Start service for integration tests
-        run: |
-          nohup ./$BUILD_DIR/$APP_NAME > $BUILD_DIR/app.log 2>&1 &
-          echo $! > $BUILD_DIR/app.pid
-          sleep 5
-          curl -f http://localhost:8080/health
-
-      - name: Run integration tests
-        run: |
-          ctest --test-dir $BUILD_DIR -R integration --output-on-failure --output-junit $BUILD_DIR/test-results/integration-tests.xml
-
-      - name: Stop service after integration tests
-        if: always()
-        run: |
-          if [ -f "$BUILD_DIR/app.pid" ]; then
-            kill "$(cat $BUILD_DIR/app.pid)" || true
-          fi
 
       - name: Upload build and test artifacts
         uses: actions/upload-artifact@v4
