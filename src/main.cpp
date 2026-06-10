@@ -19,9 +19,9 @@ static void signal_handler(int) {
     }
 }
 
-static std::string build_solve_response() {
+static std::string build_solve_response(const std::string& dataFile = "data/input.txt") {
     GraphParser parser;
-    parser.parse("data/input.txt");
+    parser.parse(dataFile);
 
     NetworkBuilder network;
     auto mst = network.buildMST(parser.N, parser.dist);
@@ -53,9 +53,13 @@ int main() {
         res.set_content(body.dump(), "application/json");
     });
 
-    svr.Get("/solve", [](const httplib::Request&, httplib::Response& res) {
+    svr.Get("/solve", [](const httplib::Request& req, httplib::Response& res) {
         try {
-            res.set_content(build_solve_response(), "application/json");
+            std::string file = req.get_param_value("file");
+            if (file.empty()) {
+                file = "data/input.txt";
+            }
+            res.set_content(build_solve_response(file), "application/json");
         } catch (const std::exception& e) {
             res.status = 500;
             json err;

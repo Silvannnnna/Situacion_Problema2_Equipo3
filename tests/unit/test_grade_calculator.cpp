@@ -391,6 +391,29 @@ TEST(GraphParserTest, ParsesZeroNodes) {
     EXPECT_TRUE(p.coords.empty());
 }
 
+TEST(GraphParserTest, ParsesOneByOne) {
+    auto path = writeTempInput("1\n0\n0\n(7,3)\n");
+    GraphParser p;
+    p.parse(path);
+    EXPECT_EQ(p.N, 1);
+    EXPECT_EQ(p.dist[0][0], 0);
+    EXPECT_EQ(p.capacity[0][0], 0);
+    EXPECT_EQ(p.coords[0].first, 7);
+    EXPECT_EQ(p.coords[0].second, 3);
+}
+
+TEST(GraphParserTest, ParsesTwoByTwoFull) {
+    auto path = writeTempInput("2\n0 9\n9 0\n0 6\n6 0\n(3,4)\n(8,1)\n");
+    GraphParser p;
+    p.parse(path);
+    EXPECT_EQ(p.N, 2);
+    EXPECT_EQ(p.dist[0][1], 9);
+    EXPECT_EQ(p.dist[1][0], 9);
+    EXPECT_EQ(p.capacity[0][1], 6);
+    EXPECT_EQ(p.coords[1].first, 8);
+    EXPECT_EQ(p.coords[1].second, 1);
+}
+
 TEST(GraphParserTest, ParsesThreeByThree) {
     auto path = writeTempInput(
         "3\n"
