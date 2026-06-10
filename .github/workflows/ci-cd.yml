@@ -106,7 +106,7 @@ jobs:
 
       - name: Start service for integration tests
         run: |
-          nohup ./$BUILD_DIR/$APP_NAME > $BUILD_DIR/app.log 2>&1 &
+          nohup ./$BUILD_DIR/$APP_NAME --server > $BUILD_DIR/app.log 2>&1 &
           echo $! > $BUILD_DIR/app.pid
           sleep 5
           curl -f http://localhost:8080/health
@@ -302,7 +302,7 @@ jobs:
 
       - name: Start service
         run: |
-          nohup ./$BUILD_DIR/$APP_NAME > $BUILD_DIR/app.log 2>&1 &
+          nohup ./$BUILD_DIR/$APP_NAME --server > $BUILD_DIR/app.log 2>&1 &
           echo $! > $BUILD_DIR/app.pid
           sleep 8
           curl -f http://localhost:8080/health
@@ -470,7 +470,7 @@ jobs:
           Type=simple
           User=ubuntu
           WorkingDirectory=/opt/situacion-problema2/current
-          ExecStart=/opt/situacion-problema2/current/situacion_problema2
+          ExecStart=/opt/situacion-problema2/current/situacion_problema2 --server
           Restart=always
           RestartSec=5
           Environment=PORT=8080

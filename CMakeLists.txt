@@ -43,7 +43,7 @@ target_include_directories(student_core PUBLIC include)
 target_link_libraries(student_core PUBLIC httplib::httplib nlohmann_json::nlohmann_json)
 
 add_executable(situacion_problema2 src/main.cpp)
-target_link_libraries(situacion_problema2 PRIVATE student_core)
+target_link_libraries(situacion_problema2 PRIVATE student_core httplib::httplib nlohmann_json::nlohmann_json)
 
 add_executable(unit_tests tests/unit/test_grade_calculator.cpp)
 target_link_libraries(unit_tests PRIVATE student_core GTest::gtest_main)

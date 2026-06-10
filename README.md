@@ -138,26 +138,32 @@ sudo apt-get install -y cmake ninja-build g++ lcov gcovr curl git
 
 ## 2. Compilar y ejecutar
 
-### Opción A — compilación directa con g++
+### Opción A — con CMake (recomendado)
 
 ```bash
-g++ -std=c++17 -Iinclude \
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel
+./build/situacion_problema2
+```
+
+### Opción B — compilación directa con g++
+
+> Requiere haber corrido CMake al menos una vez para descargar las dependencias en `build/_deps/`.
+
+```bash
+g++ -std=c++17 \
   src/main.cpp \
   src/GraphParser.cpp \
   src/NetworkBuilder.cpp \
   src/RoutingAndFlow.cpp \
   src/GeoDistricts.cpp \
-  -o proyecto_sit2
+  -I include \
+  -I build/_deps/httplib-src \
+  -I build/_deps/json-src/include \
+  -lpthread \
+  -o situacion_problema2
 
-./proyecto_sit2
-```
-
-### Opción B — con CMake (necesario para pruebas y SonarQube)
-
-```bash
-cmake --preset default
-cmake --build --preset default --parallel
-./build/proyecto_sit2
+./situacion_problema2
 ```
 
 ---
