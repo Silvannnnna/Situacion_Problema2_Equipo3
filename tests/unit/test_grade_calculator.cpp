@@ -380,3 +380,71 @@ TEST(GraphParserTest, ParsesNegativeCoords) {
     EXPECT_EQ(p.coords[0].first, -5);
     EXPECT_EQ(p.coords[0].second, -10);
 }
+
+TEST(GraphParserTest, ParsesZeroNodes) {
+    auto path = writeTempInput("0\n");
+    GraphParser p;
+    p.parse(path);
+    EXPECT_EQ(p.N, 0);
+    EXPECT_TRUE(p.dist.empty());
+    EXPECT_TRUE(p.capacity.empty());
+    EXPECT_TRUE(p.coords.empty());
+}
+
+TEST(GraphParserTest, ParsesThreeByThree) {
+    auto path = writeTempInput(
+        "3\n"
+        "0 5 10\n5 0 3\n10 3 0\n"
+        "0 2 4\n2 0 1\n4 1 0\n"
+        "(0,0)\n(5,0)\n(2,4)\n"
+    );
+    GraphParser p;
+    p.parse(path);
+    EXPECT_EQ(p.N, 3);
+    EXPECT_EQ(p.dist[1][2], 3);
+    EXPECT_EQ(p.capacity[0][2], 4);
+    EXPECT_EQ(p.coords[2].first, 2);
+    EXPECT_EQ(p.coords[2].second, 4);
+}
+
+// ── RoutingAndFlow extra coverage ────────────────────────────────────────────
+
+TEST(RoutingAndFlowTest, MaxFlowLargerGraph) {
+    // Red con multiples caminos y bottlenecks
+    std::vector<std::vector<int>> cap = {
+        {0, 10,  0,  0,  0},
+        {0,  0,  5,  8,  0},
+        {0,  0,  0,  0,  7},
+        {0,  0,  3,  0,  6},
+        {0,  0,  0,  0,  0}
+    };
+    RoutingAndFlow rf;
+    int flow = rf.MaxFlow(5, cap, 0, 4);
+    EXPECT_GT(flow, 0);
+    EXPECT_LE(flow, 10);
+}
+
+TEST(RoutingAndFlowTest, TSPThreeNodes) {
+    std::vector<std::vector<int>> dist = {
+        { 0, 10, 15},
+        {10,  0, 35},
+        {15, 35,  0}
+    };
+    RoutingAndFlow rf;
+    auto tour = rf.SolveTSP(3, dist);
+    EXPECT_EQ(static_cast<int>(tour.size()), 3);
+    EXPECT_EQ(tour[0], 0);
+}
+
+TEST(RoutingAndFlowTest, FormatTSPSingleNode) {
+    RoutingAndFlow rf;
+    auto result = rf.FormatTSP({0});
+    EXPECT_NE(result.find('A'), std::string::npos);
+}
+
+TEST(GeoDistrictsTest, VoronoiPolygonsTwoPoints) {
+    std::vector<std::pair<int,int>> pts = {{0,0}, {10,0}};
+    GeoDistricts geo;
+    auto regions = geo.voronoiPolygons(pts);
+    EXPECT_EQ(static_cast<int>(regions.size()), 2);
+}

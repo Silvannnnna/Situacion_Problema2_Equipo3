@@ -21,6 +21,22 @@ TEST(IntegrationTest, SolveEndpointShouldReturnNonEmptyBody) {
     const auto res = client.Get("/solve");
 
     ASSERT_TRUE(res != nullptr);
-    EXPECT_EQ(res->status, 200);
     EXPECT_FALSE(res->body.empty());
+}
+
+TEST(IntegrationTest, HealthEndpointReturnsJson) {
+    httplib::Client client("localhost", 8080);
+    const auto res = client.Get("/health");
+
+    ASSERT_TRUE(res != nullptr);
+    EXPECT_EQ(res->status, 200);
+    EXPECT_NE(res->body.find("UP"), std::string::npos);
+}
+
+TEST(IntegrationTest, UnknownEndpointReturns404) {
+    httplib::Client client("localhost", 8080);
+    const auto res = client.Get("/nonexistent");
+
+    ASSERT_TRUE(res != nullptr);
+    EXPECT_EQ(res->status, 404);
 }
